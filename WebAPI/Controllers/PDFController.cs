@@ -62,7 +62,7 @@ namespace WebAPI.Controllers
 
             doc.Objects.Add(new ObjectSettings
             {
-                HtmlContent = "<html><body><h1 style='color: #f00;'>Hello world!</h1></body></html>",
+                HtmlContent = "<html><body><h1 style='color: #f00;'>Hello worlds!!</h1></body></html>",
                 WebSettings = { DefaultEncoding = "utf-8" },
                 HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true, Spacing = 2.812 },
                 PagesCount = true

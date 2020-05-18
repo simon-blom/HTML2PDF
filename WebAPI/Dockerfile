@@ -10,6 +10,7 @@ RUN gdebi --n wkhtmltox_0.12.5-1.stretch_amd64.deb
 RUN apt install libssl1.0
 RUN ln -s /usr/local/lib/libwkhtmltox.so /usr/lib/libwkhtmltox.so
 WORKDIR /app
+EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
