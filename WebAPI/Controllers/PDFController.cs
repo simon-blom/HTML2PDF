@@ -2,31 +2,78 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class PDFController : ControllerBase
+    [Route("api/v1/pdf")]
+    public class PdfController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private IConverter _pdfConverter;
 
-        private readonly ILogger<PDFController> _logger;
-
-        public PDFController(ILogger<PDFController> logger)
+        public PdfController(IConverter pdfConverter)
         {
-            _logger = logger;
+            _pdfConverter = pdfConverter;
         }
 
         [HttpPost]
-        public async Task<byte[]> Create()
+        [Produces("application/pdf")]
+        public IActionResult Create([FromBody]HtmlSourceModel model)
         {
-            return new byte[0];
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    PaperSize = model.PdfSettings.PaperKind,
+                    Orientation = model.PdfSettings.Orientation
+                }
+            };
+
+            doc.Objects.Add(new ObjectSettings
+            {
+                HtmlContent = model.Html,
+                WebSettings = { DefaultEncoding = "utf-8" },
+                HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true, Spacing = 2.812 },
+                PagesCount = true
+            });
+
+            var pdf = _pdfConverter.Convert(doc);
+
+            return new FileContentResult(pdf, "application/pdf");
         }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var settings = new PdfSettings();
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    PaperSize = settings.PaperKind,
+                    Orientation = settings.Orientation
+                }
+            };
+
+            doc.Objects.Add(new ObjectSettings
+            {
+                HtmlContent = "<html><body><h1 style='color: #f00;'>Hello world!</h1></body></html>",
+                WebSettings = { DefaultEncoding = "utf-8" },
+                HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true, Spacing = 2.812 },
+                PagesCount = true
+            });
+
+            var pdf = _pdfConverter.Convert(doc);
+
+            return new FileContentResult(pdf, "application/pdf");
+        }
+
+
+
     }
 }
