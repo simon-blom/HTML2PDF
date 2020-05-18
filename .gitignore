@@ -5,4 +5,5 @@
 /WebAPI/bin
 /WebAPI/obj
 /WebAPI/.vs
+/WebAPI/WebAPI.csproj.user
 /.vs
